@@ -35,6 +35,11 @@ module RedSocial {
         void recibirMensaje(Mensaje nuevo) throws noMensaje;
 	}
 
+    interface PubSubMensajes{
+        void addSus(IdRecursos * client);
+        void delSus(IdRecursos * client);
+    }
+
 	interface ReceptoraMensajes {
 		Mensaje crearMensaje(Id userId, string mensaje);
 		MensajeLike darLike(Id mensajeId);
