@@ -4,6 +4,10 @@ module RedSocial {
         string razon = "Id Desconocido";
     }
 
+    exception noMensaje{
+        string razon = "Eso no es un mensaje";
+    }
+
     class Id{
         string id;
     }
@@ -28,6 +32,7 @@ module RedSocial {
 
     interface IdRecursos{
 		Id getId(string id) throws idException;
+        void recibirMensaje(Mensaje nuevo) throws noMensaje;
 	}
 
 	interface ReceptoraMensajes {
