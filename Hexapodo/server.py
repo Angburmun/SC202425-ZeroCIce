@@ -1,4 +1,4 @@
-import sys, Ice, os, subprocess
+import sys, Ice, io
 import RoboInterface # Generated from Hexapod.ice
 from picamera2 import Picamera2
 from picamera2.previews.null_preview import NullPreview
