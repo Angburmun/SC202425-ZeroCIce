@@ -45,4 +45,8 @@ module RedSocial {
 		MensajeLike darLike(Id mensajeId);
 		UsuarioLista obtenerListaMensajes(Id userId);
 	}
+
+    interface HexapodImage {
+        byte[] getSnapshot();
+    }
 }
