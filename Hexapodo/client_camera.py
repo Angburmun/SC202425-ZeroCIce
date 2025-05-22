@@ -4,7 +4,6 @@ import io, cv2
 import numpy as np
 import time
 import RoboInterface  # Generated from Hexapod.ice
-import keyboard       # For reading keyboard input
 
 class Client(Ice.Application):
     def run(self, args):
@@ -26,7 +25,7 @@ class Client(Ice.Application):
         try:
             proxy_string = f"HexapodController:default -h {raspberry_pi_ip} -p 10000"
             base_proxy = communicator.stringToProxy(proxy_string)
-            hexapod_prx = RoboInterface.HexapodControllerPrx.checkedCast(base_proxy)
+            hexapod_prx = RoboInterface.HexapodControllerPrx.uncheckedCast(base_proxy)
 
             if not hexapod_prx:
                 print(f"Invalid proxy for {proxy_string}")
@@ -48,53 +47,18 @@ class Client(Ice.Application):
             moving = False
 
             while True:
-                if keyboard.is_pressed('q'):
-                    print("Q pressed, exiting...")
-                    if moving: # Ensure robot is stopped if it was moving
-                        print("Stopping robot before exit.")
-                        hexapod_prx.stop()
-                    break # Exit the loop
-
-                new_movement = False
-                if keyboard.is_pressed('w'):
-                    print("W pressed - Moving Forward")
-                    hexapod_prx.move(RoboInterface.MovementDirection.FOWARD, current_speed)
-                    new_movement = True
-                elif keyboard.is_pressed('s'):
-                    print("S pressed - Moving Backward")
-                    hexapod_prx.move(RoboInterface.MovementDirection.BACKWARD, current_speed)
-                    new_movement = True
-                elif keyboard.is_pressed('a'):
-                    print("A pressed - Moving Left")
-                    hexapod_prx.move(RoboInterface.MovementDirection.LEFT, current_speed)
-                    new_movement = True
-                elif keyboard.is_pressed('d'):
-                    print("D pressed - Moving Right")
-                    hexapod_prx.move(RoboInterface.MovementDirection.RIGHT, current_speed)
-                    new_movement = True
-                elif keyboard.is_pressed('c'):
-                    print("C pressed - Waiting for a picture from the robot...")
-                    data = io.BytesIO()
-                    data = RoboInterface.HexapodControllerPrx.getSnapshot()
-
-                    nparr = np.frombuffer(data, np.uint8)
-                    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Puedes usar IMREAD_GRAYSCALE si prefieres
-
-                    # Mostrar imagen en ventana
-                    cv2.imshow("Imagen recibida", img)
-                    cv2.waitKey(0)  # Espera una tecla
-                    cv2.destroyAllWindows()
+                print("C pressed - Waiting for a picture from the robot...")
+                hexapod_prx.stop()
                 
-                if new_movement and not moving:
-                    moving = True
-                    print("Robot started moving.")
-                elif not new_movement and moving:
-                    print("No movement key pressed - Stopping robot.")
-                    hexapod_prx.stop()
-                    moving = False
-                
-                # Small delay to prevent overwhelming the CPU and network
-                # Adjust if necessary for responsiveness
+                data = hexapod_prx.getSnapshot()
+
+                nparr = np.frombuffer(data, np.uint8)
+                img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Puedes usar IMREAD_GRAYSCALE si prefieres
+
+                # Mostrar imagen en ventana
+                cv2.imshow("Imagen recibida", img)
+                cv2.waitKey(0)  # Espera una tecla
+                cv2.destroyAllWindows()
                 time.sleep(0.05)
 
 
@@ -139,7 +103,7 @@ class Client(Ice.Application):
         finally:
             if communicator:
                 try:
-                    if hexapod_prx and moving and not keyboard.is_pressed('q'): # Ensure stop if loop exited unexpectedly
+                    if hexapod_prx and moving: # Ensure stop if loop exited unexpectedly
                         print("Ensuring robot is stopped in finally block.")
                         # This might be problematic if the communicator is already shutting down
                         # hexapod_prx.stop()
