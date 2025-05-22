@@ -1,2 +1,2 @@
-# SC2425-ZeroCIce
+# SC202425-ZeroCIce
 Prácticas de la asignatura Sistemas Críticos
