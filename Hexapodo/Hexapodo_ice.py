@@ -118,66 +118,6 @@ if 'HexapodControllerPrx' not in _M_RoboInterface.__dict__:
         def end_stop(self, _r):
             return _M_RoboInterface.HexapodController._op_stop.end(self, _r)
 
-        def setGait(self, gaitName, context=None):
-            return _M_RoboInterface.HexapodController._op_setGait.invoke(self, ((gaitName, ), context))
-
-        def setGaitAsync(self, gaitName, context=None):
-            return _M_RoboInterface.HexapodController._op_setGait.invokeAsync(self, ((gaitName, ), context))
-
-        def begin_setGait(self, gaitName, _response=None, _ex=None, _sent=None, context=None):
-            return _M_RoboInterface.HexapodController._op_setGait.begin(self, ((gaitName, ), _response, _ex, _sent, context))
-
-        def end_setGait(self, _r):
-            return _M_RoboInterface.HexapodController._op_setGait.end(self, _r)
-
-        def setBodyHeight(self, heightPercentage, context=None):
-            return _M_RoboInterface.HexapodController._op_setBodyHeight.invoke(self, ((heightPercentage, ), context))
-
-        def setBodyHeightAsync(self, heightPercentage, context=None):
-            return _M_RoboInterface.HexapodController._op_setBodyHeight.invokeAsync(self, ((heightPercentage, ), context))
-
-        def begin_setBodyHeight(self, heightPercentage, _response=None, _ex=None, _sent=None, context=None):
-            return _M_RoboInterface.HexapodController._op_setBodyHeight.begin(self, ((heightPercentage, ), _response, _ex, _sent, context))
-
-        def end_setBodyHeight(self, _r):
-            return _M_RoboInterface.HexapodController._op_setBodyHeight.end(self, _r)
-
-        def moveLeg(self, legId, targetPosition, context=None):
-            return _M_RoboInterface.HexapodController._op_moveLeg.invoke(self, ((legId, targetPosition), context))
-
-        def moveLegAsync(self, legId, targetPosition, context=None):
-            return _M_RoboInterface.HexapodController._op_moveLeg.invokeAsync(self, ((legId, targetPosition), context))
-
-        def begin_moveLeg(self, legId, targetPosition, _response=None, _ex=None, _sent=None, context=None):
-            return _M_RoboInterface.HexapodController._op_moveLeg.begin(self, ((legId, targetPosition), _response, _ex, _sent, context))
-
-        def end_moveLeg(self, _r):
-            return _M_RoboInterface.HexapodController._op_moveLeg.end(self, _r)
-
-        def getStatus(self, context=None):
-            return _M_RoboInterface.HexapodController._op_getStatus.invoke(self, ((), context))
-
-        def getStatusAsync(self, context=None):
-            return _M_RoboInterface.HexapodController._op_getStatus.invokeAsync(self, ((), context))
-
-        def begin_getStatus(self, _response=None, _ex=None, _sent=None, context=None):
-            return _M_RoboInterface.HexapodController._op_getStatus.begin(self, ((), _response, _ex, _sent, context))
-
-        def end_getStatus(self, _r):
-            return _M_RoboInterface.HexapodController._op_getStatus.end(self, _r)
-
-        def emergencyStop(self, context=None):
-            return _M_RoboInterface.HexapodController._op_emergencyStop.invoke(self, ((), context))
-
-        def emergencyStopAsync(self, context=None):
-            return _M_RoboInterface.HexapodController._op_emergencyStop.invokeAsync(self, ((), context))
-
-        def begin_emergencyStop(self, _response=None, _ex=None, _sent=None, context=None):
-            return _M_RoboInterface.HexapodController._op_emergencyStop.begin(self, ((), _response, _ex, _sent, context))
-
-        def end_emergencyStop(self, _r):
-            return _M_RoboInterface.HexapodController._op_emergencyStop.end(self, _r)
-
         def getSnapshot(self, context=None):
             return _M_RoboInterface.HexapodController._op_getSnapshot.invoke(self, ((), context))
 
@@ -225,21 +165,6 @@ if 'HexapodControllerPrx' not in _M_RoboInterface.__dict__:
         def stop(self, current=None):
             raise NotImplementedError("servant method 'stop' not implemented")
 
-        def setGait(self, gaitName, current=None):
-            raise NotImplementedError("servant method 'setGait' not implemented")
-
-        def setBodyHeight(self, heightPercentage, current=None):
-            raise NotImplementedError("servant method 'setBodyHeight' not implemented")
-
-        def moveLeg(self, legId, targetPosition, current=None):
-            raise NotImplementedError("servant method 'moveLeg' not implemented")
-
-        def getStatus(self, current=None):
-            raise NotImplementedError("servant method 'getStatus' not implemented")
-
-        def emergencyStop(self, current=None):
-            raise NotImplementedError("servant method 'emergencyStop' not implemented")
-
         def getSnapshot(self, current=None):
             raise NotImplementedError("servant method 'getSnapshot' not implemented")
 
@@ -253,11 +178,6 @@ if 'HexapodControllerPrx' not in _M_RoboInterface.__dict__:
 
     HexapodController._op_move = IcePy.Operation('move', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), _M_RoboInterface._t_MovementDirection, False, 0), ((), IcePy._t_int, False, 0)), (), None, ())
     HexapodController._op_stop = IcePy.Operation('stop', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), None, ())
-    HexapodController._op_setGait = IcePy.Operation('setGait', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
-    HexapodController._op_setBodyHeight = IcePy.Operation('setBodyHeight', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0),), (), None, ())
-    HexapodController._op_moveLeg = IcePy.Operation('moveLeg', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), _M_RoboInterface._t_Position, False, 0)), (), None, ())
-    HexapodController._op_getStatus = IcePy.Operation('getStatus', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), IcePy._t_string, False, 0), ())
-    HexapodController._op_emergencyStop = IcePy.Operation('emergencyStop', Ice.OperationMode.Idempotent, Ice.OperationMode.Idempotent, False, None, (), (), (), None, ())
     HexapodController._op_getSnapshot = IcePy.Operation('getSnapshot', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), _M_RoboInterface._t_ByteSeq, False, 0), ())
 
     _M_RoboInterface.HexapodController = HexapodController
