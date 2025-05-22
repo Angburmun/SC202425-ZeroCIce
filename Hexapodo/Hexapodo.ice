@@ -1,4 +1,5 @@
 module RoboInterface{
+    sequence<byte> ByteSeq;
 
     enum MovementDirection{
         FOWARD,
@@ -32,9 +33,7 @@ module RoboInterface{
 
         // idempotent operations for safety if needed
         idempotent void emergencyStop();
-    };
 
-    interface HexapodImage {
-        byte[] getSnapshot();
-    }
-}
+        ByteSeq getSnapshot();
+    };
+};
