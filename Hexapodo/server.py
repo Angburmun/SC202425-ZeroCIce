@@ -15,52 +15,24 @@ class HexapodControllerI(RoboInterface.HexapodController):
 
     def move(self, direction, speed, current=None):
         print(f"Server: Received move command - Direction: {direction}, Speed: {speed}")
-        # Translate RoboInterface.MovementDirection to Freenove commands
-        # Example:
-        # if direction == RoboInterface.MovementDirection.Forward:
-        #     self.hexapod.move_forward(speed)
-        # elif direction == RoboInterface.MovementDirection.Backward:
-        #     self.hexapod.move_backward(speed)
-        # ... and so on for other directions
-        # self.hexapod.set_speed(speed) # If speed is a separate call
+
+        if direction == RoboInterface.MovementDirection.Forward:
+            # Move forward in action mode 1 and gait mode 1
+            for i in range(3):
+                data = ['CMD_MOVE', '1', '0', '35', '10', '0']
+                c.run(data)  # Run gait with specified parameters
+        elif direction == RoboInterface.MovementDirection.Backward:
+            # Move backward in action mode 2 and gait mode 2    
+            for i in range(3):
+                data = ['CMD_MOVE', '2', '0', '-35', '10', '10']
+                c.run(data)  # Run gait with specified parameters
+        
+
         pass
 
     def stop(self, current=None):
         print("Server: Received stop command")
         # self.hexapod.stop_movement()
-        pass
-
-    def setGait(self, gaitName, current=None):
-        print(f"Server: Setting gait to {gaitName}")
-        # self.hexapod.set_gait(gaitName)
-        pass
-
-    def setBodyHeight(self, heightPercentage, current=None):
-        print(f"Server: Setting body height to {heightPercentage}%")
-        # self.hexapod.set_body_height(heightPercentage)
-        pass
-
-    def moveLeg(self, legId, targetPosition, current=None):
-        print(f"Server: Moving leg {legId} to ({targetPosition.x}, {targetPosition.y}, {targetPosition.z})")
-        # self.hexapod.move_individual_leg(legId, targetPosition.x, targetPosition.y, targetPosition.z)
-        pass
-
-    def getSensorData(self, current=None):
-        print("Server: Received request for sensor data")
-        # distance_reading = self.hexapod.read_ultrasonic_sensor()
-        # sensor_data = RoboInterface.SensorData(distance=distance_reading)
-        # return sensor_data
-        return RoboInterface.SensorData(distance=0.0) # Placeholder
-
-    def getStatus(self, current=None):
-        print("Server: Received request for status")
-        # status = self.hexapod.get_current_status()
-        # return status
-        return "Idle" # Placeholder
-
-    def emergencyStop(self, current=None):
-        print("Server: EMERGENCY STOP ACTIVATED")
-        # self.hexapod.emergency_power_off() # Or a very abrupt stop
         pass
 
 
