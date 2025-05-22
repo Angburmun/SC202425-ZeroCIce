@@ -1,5 +1,7 @@
 import sys
 import Ice
+import io, cv2
+import numpy as np
 import time
 import RoboInterface  # Generated from Hexapod.ice
 import keyboard       # For reading keyboard input
@@ -37,6 +39,7 @@ class Client(Ice.Application):
             print("  A - Strafe Left")
             print("  D - Strafe Right")
             print("  Q - Quit and Stop Robot")
+            print("  C - Camera mode")
             print("\nHold down W, A, S, or D to move. Release to stop.")
             print("Press Q to exit.\n")
 
@@ -69,6 +72,18 @@ class Client(Ice.Application):
                     print("D pressed - Moving Right")
                     hexapod_prx.move(RoboInterface.MovementDirection.RIGHT, current_speed)
                     new_movement = True
+                elif keyboard.is_pressed('c'):
+                    print("C pressed - Waiting for a picture from the robot...")
+                    data = io.BytesIO()
+                    data = RoboInterface.getSnapshot()
+
+                    nparr = np.frombuffer(data, np.uint8)
+                    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Puedes usar IMREAD_GRAYSCALE si prefieres
+
+                    # Mostrar imagen en ventana
+                    cv2.imshow("Imagen recibida", img)
+                    cv2.waitKey(0)  # Espera una tecla
+                    cv2.destroyAllWindows()
                 
                 if new_movement and not moving:
                     moving = True
