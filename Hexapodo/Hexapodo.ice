@@ -33,4 +33,8 @@ module RoboInterface{
         // idempotent operations for safety if needed
         idempotent void emergencyStop();
     };
+
+    interface HexapodImage {
+        byte[] getSnapshot();
+    }
 }
