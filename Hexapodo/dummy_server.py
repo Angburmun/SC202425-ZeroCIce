@@ -1,4 +1,4 @@
-import sys, Ice
+import os, io, sys, Ice
 import RoboInterface  # Asegúrate de que Hexapod.ice esté compilado
 
 class HexapodControllerDummy(RoboInterface.HexapodController):
@@ -10,8 +10,15 @@ class HexapodControllerDummy(RoboInterface.HexapodController):
         # No hace nada
 
     def getSnapshot(self, current=None):
-        print("Dummy Server: Received getSnapshot command")
-        return b''  # Devuelve un byte string vacío, válido para Ice
+        try:
+            print("Dummy Server: Reading 'lenna.jpg' from disk...")
+            with open("lenna.jpg", "rb") as f:
+                image_data = f.read()
+            print(f"Dummy Server: Loaded {len(image_data)} bytes from lenna.jpg")
+            return image_data
+        except Exception as e:
+            print(f"Error reading 'lenna.jpg': {e}")
+            return b''  # Devuelve vacío si hay error
 
     def stop(self, current=None):
         print("Dummy Server: Received stop command")
