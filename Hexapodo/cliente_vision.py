@@ -131,15 +131,16 @@ class Client(Ice.Application):
                 elif keyboard.is_pressed('c'):
                     print("C pressed - Waiting for a picture from the robot...")
                     data = io.BytesIO()
-                    data = RoboInterface.getSnapshot()
+                    data = hexapod_prx.getSnapshot()
 
                     nparr = np.frombuffer(data, np.uint8)
                     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Puedes usar IMREAD_GRAYSCALE si prefieres
 
                     # Mostrar imagen en ventana
-                    cv2.imshow("Imagen recibida", img)
-                    cv2.waitKey(0)  # Espera una tecla
-                    cv2.destroyAllWindows()
+                    #cv2.imshow("Imagen recibida", img)
+                    #cv2.waitKey(0)  # Espera una tecla
+                    #cv2.destroyAllWindows()
+                    yolo_vision(img)
                 
                 if new_movement and not moving:
                     moving = True
