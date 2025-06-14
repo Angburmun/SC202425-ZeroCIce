@@ -34,35 +34,53 @@ def yolo_vision(img):
 
     # Obtener la detección con mayor confianza
     if not detecciones_filtradas.empty:
-        mejor = detecciones_filtradas.loc[detecciones_filtradas['confidence'].idxmax()]
-        print("Mejor detección de tipo '{}':".format(clase_deseada))
-        print(mejor)
-        #mejor = detecciones_filtradas.loc[detecciones_filtradas['confidence'].idxmax()]
+        # Filtrar detecciones con confianza mayor al 50%
+        detecciones_filtradas = detecciones_filtradas[detecciones_filtradas['confidence'] > 0.5]
 
-        # Extraer bounding box y convertir a int
-        xmin = int(mejor['xmin'])
-        ymin = int(mejor['ymin'])
-        xmax = int(mejor['xmax'])
-        ymax = int(mejor['ymax'])
-        conf = mejor['confidence']
-        label = f"{mejor['name']} {conf:.2f}"
+        bounding_boxes = []
+        # Dibujar una caja para cada detección con confianza > 50%
+        for _, fila in detecciones_filtradas.iterrows():
+            xmin = int(fila['xmin'])
+            ymin = int(fila['ymin'])
+            xmax = int(fila['xmax'])
+            ymax = int(fila['ymax'])
+            conf = fila['confidence']
+            label = f"{fila['name']} {conf:.2f}"
 
-        # Dibujar bounding box
-        cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-        cv2.putText(img, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+            bounding_boxes.append((xmin, ymin, xmax, ymax, label))
+
+            # Dibujar bounding box
+            cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+            cv2.putText(img, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
         #img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
 
         # Guardar imagen en disco
-        output_path = 'mejor_deteccion.jpg'
+        output_path = 'detecciones.jpg'
         cv2.imwrite(output_path, img)
         print(f"Imagen guardada en: {output_path}")
+        return bounding_boxes
 
     else:
         print(f"No se detectaron objetos de tipo '{clase_deseada}'")
+        return []
+
 
 
 class Client(Ice.Application):
+    def show_help(self):
+        print("---------------------")
+        print("\nControls:")
+        print("  W - Move Forward")
+        print("  S - Move Backward")
+        print("  A - Strafe Left")
+        print("  D - Strafe Right")
+        print("  Q - Quit and Stop Robot")
+        print("  C - Camera mode")
+        print("\nHold down W, A, S, or D to move. Release to stop.")
+        print("Press Q to exit.\n")
+        return
+
     def run(self, args):
         # raspberry_pi_ip = "10.139.70.109" # Hardcoded IP
         if len(args) > 1:
@@ -87,17 +105,11 @@ class Client(Ice.Application):
             if not hexapod_prx:
                 print(f"Invalid proxy for {proxy_string}")
                 return 1
-
+            
+            
             print(f"Successfully connected to HexapodController on {raspberry_pi_ip}")
-            print("\nControls:")
-            print("  W - Move Forward")
-            print("  S - Move Backward")
-            print("  A - Strafe Left")
-            print("  D - Strafe Right")
-            print("  Q - Quit and Stop Robot")
-            print("  C - Camera mode")
-            print("\nHold down W, A, S, or D to move. Release to stop.")
-            print("Press Q to exit.\n")
+
+            self.show_help()  # Show controls at the start
 
             # --- Keyboard Control Loop ---
             current_speed = 20  # You can adjust this speed
@@ -140,7 +152,40 @@ class Client(Ice.Application):
                     #cv2.imshow("Imagen recibida", img)
                     #cv2.waitKey(0)  # Espera una tecla
                     #cv2.destroyAllWindows()
-                    yolo_vision(img)
+                    bounding_boxes = yolo_vision(img)
+
+                    if bounding_boxes:
+                        height, width, _ = img.shape
+                        left_count, center_count, right_count = 0, 0, 0
+                        for (xmin, ymin, xmax, ymax, label) in bounding_boxes:
+                            center_x = (xmin + xmax) // 2
+                            # Define thresholds
+                            if center_x < width / 3:
+                                left_count += 1
+                            elif center_x < 2 * width / 3:
+                                center_count += 1
+                            else:
+                                right_count += 1
+
+                        print(f"Left: {left_count}, Center: {center_count}, Right: {right_count}")
+                        if center_count == 0:
+                            print("Robot should move forward.")
+                            hexapod_prx.move(RoboInterface.MovementDirection.FOWARD, current_speed)
+                        elif left_count == 0:
+                            print("Robot should move left.")
+                            hexapod_prx.move(RoboInterface.MovementDirection.LEFT, current_speed)
+                        elif right_count == 0:                              
+                            print("Robot should move right.")
+                            hexapod_prx.move(RoboInterface.MovementDirection.RIGHT, current_speed)
+                        else:
+                            print("No clear direction found, stopping robot.")
+                            hexapod_prx.stop()
+                    else:
+                        print("No bounding boxes detected, moving forward.")
+                        hexapod_prx.move(RoboInterface.MovementDirection.FOWARD, current_speed)
+                            
+
+                    self.show_help()  # Show controls again after camera mode
                 
                 if new_movement and not moving:
                     moving = True
