@@ -32,9 +32,14 @@ class DummyServer(Ice.Application):
 
         communicator = self.communicator()
         adapter_name = "HexapodAdapter"
+
+        # Without IceDiscovery:
         # Define the endpoint: "default -p 10000" means TCP/IP on port 10000
         # You can make the IP address specific e.g., "tcp -h YOUR_RASPBERRY_PI_IP -p 10000"
-        adapter = communicator.createObjectAdapterWithEndpoints(adapter_name, "default -p 10000")
+        # adapter = communicator.createObjectAdapterWithEndpoints(adapter_name, "default -p 10000")
+
+        adapter = communicator.createObjectAdapter(adapter_name)
+
 
         servant = HexapodControllerDummy()
         proxy = adapter.add(servant, communicator.stringToIdentity("HexapodController"))

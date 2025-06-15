@@ -82,23 +82,26 @@ class Client(Ice.Application):
         return
 
     def run(self, args):
-        # raspberry_pi_ip = "10.139.70.109" # Hardcoded IP
-        if len(args) > 1:
-            raspberry_pi_ip = args[1]
-        else:
-            # Fallback to hardcoded if no argument provided
-            raspberry_pi_ip = "10.139.70.109"
-            print(f"No IP address provided, using default: {raspberry_pi_ip}")
-            # You might want to uncomment the below lines to make IP mandatory
-            # print(f"Usage: {self.appName()} <raspberry_pi_ip_address>")
-            # return 1
+        # # raspberry_pi_ip = "10.139.70.109" # Hardcoded IP
+        # if len(args) > 1:
+        #     raspberry_pi_ip = args[1]
+        # else:
+        #     # Fallback to hardcoded if no argument provided
+        #     raspberry_pi_ip = "10.139.70.109"
+        #     print(f"No IP address provided, using default: {raspberry_pi_ip}")
+        #     # You might want to uncomment the below lines to make IP mandatory
+        #     # print(f"Usage: {self.appName()} <raspberry_pi_ip_address>")
+        #     # return 1
 
 
         communicator = self.communicator()
         hexapod_prx = None  # Initialize to None
 
         try:
-            proxy_string = f"HexapodController:default -h {raspberry_pi_ip} -p 10000"
+            # Without IceDiscovery:
+            # proxy_string = f"HexapodController:default -h {raspberry_pi_ip} -p 10000"
+
+            proxy_string = "HexapodController@HexapodAdapter"
             base_proxy = communicator.stringToProxy(proxy_string)
             hexapod_prx = RoboInterface.HexapodControllerPrx.checkedCast(base_proxy)
 
@@ -107,7 +110,7 @@ class Client(Ice.Application):
                 return 1
             
             
-            print(f"Successfully connected to HexapodController on {raspberry_pi_ip}")
+            print(f"Successfully connected to HexapodController")
 
             self.show_help()  # Show controls at the start
 
@@ -181,7 +184,7 @@ class Client(Ice.Application):
                             print("No clear direction found, stopping robot.")
                             hexapod_prx.stop()
                     else:
-                        print("No bounding boxes detected, moving forward.")
+                        print("No bottle detected, moving forward.")
                         hexapod_prx.move(RoboInterface.MovementDirection.FOWARD, current_speed)
                             
 

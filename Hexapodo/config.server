@@ -1,0 +1,6 @@
+# Enable Ice Discovery plugin
+Ice.Plugin.IceDiscovery=IceDiscovery:createIceDiscovery
+
+# Configure the object adapter to be published via discovery
+HexapodAdapter.AdapterId=HexapodAdapter
+HexapodAdapter.Endpoints=tcp
