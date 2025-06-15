@@ -12,12 +12,13 @@ class HexapodControllerDummy(RoboInterface.HexapodController):
     def getSnapshot(self, current=None):
         try:
             print("Dummy Server: Reading 'lenna.jpg' from disk...")
-            with open("lenna.jpg", "rb") as f:
+            filename = "lenna.jpg"
+            with open(filename, "rb") as f:
                 image_data = f.read()
-            print(f"Dummy Server: Loaded {len(image_data)} bytes from lenna.jpg")
+            print(f"Dummy Server: Loaded {len(image_data)} bytes from {filename}")
             return image_data
         except Exception as e:
-            print(f"Error reading 'lenna.jpg': {e}")
+            print(f"Error reading '{filename}': {e}")
             return b''  # Devuelve vacío si hay error
 
     def stop(self, current=None):
