@@ -24,8 +24,11 @@ class Client(Ice.Application):
         hexapod_prx = None  # Initialize to None
 
         try:
-            proxy_string = f"HexapodController:default -h {raspberry_pi_ip} -p 10000"
+            #proxy_string = f"HexapodController:default -h {raspberry_pi_ip} -p 10000"
+            proxy_string = "HexapodController"
+            
             base_proxy = communicator.stringToProxy(proxy_string)
+            
             hexapod_prx = RoboInterface.HexapodControllerPrx.checkedCast(base_proxy)
 
             if not hexapod_prx:
