@@ -216,10 +216,10 @@ class Client(Ice.Application):
                 except Ice.Exception as e:
                     print(f"Error stopping robot during Ctrl+C: {e}")
         except Ice.ConnectTimeoutException:
-            print(f"Connection timed out to {raspberry_pi_ip}:10000. Is the server running?")
+            print(f"Connection timed out. Is the server running?")
             return 1
         except Ice.ConnectionRefusedException:
-            print(f"Connection refused by {raspberry_pi_ip}:10000. Is the server running and adapter active?")
+            print(f"Connection refused. Is the server running and adapter active?")
             return 1
         except Ice.CommunicatorDestroyedException:
             print("Communicator destroyed, likely due to Q press or other shutdown.")
