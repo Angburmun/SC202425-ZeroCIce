@@ -175,14 +175,14 @@ class Client(Ice.Application):
                             print("Robot should move forward.")
                             hexapod_prx.move(RoboInterface.MovementDirection.FOWARD, current_speed)
                         elif left_count == 0:
-                            print("Robot should move left.")
-                            hexapod_prx.move(RoboInterface.MovementDirection.LEFT, current_speed)
+                            print("Robot should turn left.")
+                            hexapod_prx.move(RoboInterface.MovementDirection.TURN_LEFT, current_speed)
                         elif right_count == 0:                              
-                            print("Robot should move right.")
-                            hexapod_prx.move(RoboInterface.MovementDirection.RIGHT, current_speed)
+                            print("Robot should turn right.")
+                            hexapod_prx.move(RoboInterface.MovementDirection.TURN_RIGHT, current_speed)
                         else:
-                            print("No clear direction found, stopping robot.")
-                            hexapod_prx.stop()
+                            print("No clear direction found, turning right.")
+                            hexapod_prx.move(RoboInterface.MovementDirection.TURN_RIGHT, current_speed)
                     else:
                         print("No bottle detected, moving forward.")
                         hexapod_prx.move(RoboInterface.MovementDirection.FOWARD, current_speed)
