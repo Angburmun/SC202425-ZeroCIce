@@ -19,29 +19,30 @@ class HexapodControllerI(RoboInterface.HexapodController):
 
     def move(self, direction, speed, current=None):
         print(f"Server: Received move command - Direction: {direction}, Speed: {speed}")
+        steps = 1
         
         if direction == RoboInterface.MovementDirection.FORWARD:
-            for i in range(3):
+            for i in range(steps):
                 data = ['CMD_MOVE', '1', '0', '35', speed, '0']
                 self.c.run(data)
         elif direction == RoboInterface.MovementDirection.BACKWARD:
-            for i in range(3):
+            for i in range(steps):
                 data = ['CMD_MOVE', '1', '0', '-35', speed, '0']
                 self.c.run(data)
         elif direction == RoboInterface.MovementDirection.LEFT:
-            for i in range(3):
+            for i in range(steps):
                 data = ['CMD_MOVE', '1', '-35', '0', speed, '0']
                 self.c.run(data)
         elif direction == RoboInterface.MovementDirection.RIGHT:
-            for i in range(3):
+            for i in range(steps):
                 data = ['CMD_MOVE', '1', '35', '0', speed, '0']
                 self.c.run(data)
         elif direction == RoboInterface.MovementDirection.TURN_LEFT:
-            for i in range(3):
+            for i in range(steps):
                 data = ['CMD_MOVE', '1', '0', '0', speed, '-20']
                 self.c.run(data)
         elif direction == RoboInterface.MovementDirection.TURN_RIGHT:
-            for i in range(3):
+            for i in range(steps):
                 data = ['CMD_MOVE', '1', '0', '0', speed, '20']
                 self.c.run(data)        
         return
