@@ -1,1 +1,2 @@
 Ice.Plugin.IceDiscovery=1
+Ice.MessageSizeMax=3072 # Set to 3072 KB (3 MB)

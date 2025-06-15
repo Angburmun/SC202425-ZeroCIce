@@ -1,6 +1,8 @@
 # Enable Ice Discovery plugin
 Ice.Plugin.IceDiscovery=IceDiscovery:createIceDiscovery
 
+Ice.MessageSizeMax=3072 # Set to 3072 KB (3 MB)
+
 # Configure the object adapter to be published via discovery
 HexapodAdapter.AdapterId=HexapodAdapter
 HexapodAdapter.Endpoints=tcp
