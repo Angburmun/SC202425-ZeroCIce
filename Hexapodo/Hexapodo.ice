@@ -6,14 +6,10 @@ module RoboInterface{
         BACKWARD,
         LEFT,
         RIGHT,
-        STOP
+        TURN_LEFT,
+        TURN_RIGHT
     }
 
-    struct Position{
-        float x; 
-	    float y;
-	    float z;
-    }
 
     interface HexapodController {
         // Basic movement commands
