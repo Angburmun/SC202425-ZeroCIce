@@ -6,14 +6,14 @@ module RoboInterface{
         BACKWARD,
         LEFT,
         RIGHT,
-        TURN_LEFT,
-        TURN_RIGHT
+        TURNLEFT,
+        TURNRIGHT
     }
 
 
     interface HexapodController {
         // Basic movement commands
-        void move(MovementDirection direction, int speed); // Speed could be a percentage
+        void move(MovementDirection direction, string speed); // Speed could be a percentage
         void stop();
 
         ByteSeq getSnapshot();
