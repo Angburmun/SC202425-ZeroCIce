@@ -1,4 +1,4 @@
-import sys, Ice, io
+import sys, os, Ice, io
 import RoboInterface # Generated from Hexapod.ice
 from picamera2 import Picamera2
 from picamera2.previews.null_preview import NullPreview
@@ -46,15 +46,21 @@ class HexapodControllerI(RoboInterface.HexapodController):
             picam2.configure(config)
             print("Camera configured for still capture.")
 
-            # This method will:
-            # 1. Start the camera (if not already started by start_preview, though preview implicitly starts some things)
-            # 2. Perform the capture
-            # 3. Stop the camera
-            # The preview setting (NullPreview) will be respected.
-            data = io.BytesIO()
-            print(f"Starting camera and capturing to {output_file}...")
-            picam2.start_and_capture_file(data, format='jpeg')
-            print(f"Image saved")
+            # 1. Option: save directly to a BytesIO object
+            # data = io.BytesIO()
+            # print(f"Starting camera and capturing image...")
+            # picam2.start_and_capture_file(data, format='jpeg')
+            # print(f"Image saved")
+            # return data.getvalue()
+
+            # 2. Option: save as file and than load bytes
+            temp_file_path = "temp_snapshot.jpeg"
+            picam2.start_and_capture_file(temp_file_path, format='jpeg')
+            with open(temp_file_path, "rb") as f:
+                data = f.read()
+            os.remove(temp_file_path)
+
+            return data
 
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -68,7 +74,7 @@ class HexapodControllerI(RoboInterface.HexapodController):
                 print("Closing camera...")
                 picam2.close()
                 print("Picamera2 resources released.")
-        return data
+
         
     def stop(self, current=None):
         print("Server: Received stop command")
@@ -84,16 +90,20 @@ class Server(Ice.Application):
 
         communicator = self.communicator()
         adapter_name = "HexapodAdapter"
+
+        # Without IceDiscovery:
         # Define the endpoint: "default -p 10000" means TCP/IP on port 10000
         # You can make the IP address specific e.g., "tcp -h YOUR_RASPBERRY_PI_IP -p 10000"
-        adapter = communicator.createObjectAdapterWithEndpoints(adapter_name, "tcp -h 10.139.70.109 -p 10000")
+        #adapter = communicator.createObjectAdapterWithEndpoints(adapter_name, "tcp -h 10.139.70.109 -p 10000")
+
+        adapter = communicator.createObjectAdapter(adapter_name)
 
         servant = HexapodControllerI()
         proxy = adapter.add(servant, communicator.stringToIdentity("HexapodController"))
 
         print(f"HexapodController servant active with proxy: {proxy}")
         adapter.activate()
-        print(f"Server started on port 10000. Waiting for connections...")
+        print(f"Server started on default port. Waiting for connections...")
         communicator.waitForShutdown()
         return 0
 
