@@ -145,7 +145,7 @@ class Client(Ice.Application):
                     new_movement = True
                 elif keyboard.is_pressed('c'):
                     print("C pressed - Waiting for a picture from the robot...")
-                    data = io.BytesIO()
+                    
                     data = hexapod_prx.getSnapshot()
 
                     nparr = np.frombuffer(data, np.uint8)
