@@ -2,6 +2,7 @@ import sys, os, Ice, io
 import RoboInterface # Generated from Hexapod.ice
 from picamera2 import Picamera2
 from picamera2.previews.null_preview import NullPreview
+from control import Control
 
 # Import the Freenove Hexapod control library
 # (Assuming you have a library like 'freenove_hexapod_api')
@@ -13,22 +14,37 @@ class HexapodControllerI(RoboInterface.HexapodController):
         # self.hexapod = freenove_hexapod_api.Hexapod()
         # self.hexapod.initialize()
         print("HexapodController servant initialized.")
+        self.c = Control()
         pass
 
     def move(self, direction, speed, current=None):
         print(f"Server: Received move command - Direction: {direction}, Speed: {speed}")
-
-        if direction == RoboInterface.MovementDirection.Forward:
-            # Move forward in action mode 1 and gait mode 1
+        
+        if direction == RoboInterface.MovementDirection.FORWARD:
             for i in range(3):
-                data = ['CMD_MOVE', '1', '0', '35', '10', '0']
-                c.run(data)  # Run gait with specified parameters
-        elif direction == RoboInterface.MovementDirection.Backward:
-            # Move backward in action mode 2 and gait mode 2    
+                data = ['CMD_MOVE', '1', '0', '35', speed, '0']
+                self.c.run(data)
+        elif direction == RoboInterface.MovementDirection.BACKWARD:
             for i in range(3):
-                data = ['CMD_MOVE', '2', '0', '-35', '10', '10']
-                c.run(data)  # Run gait with specified parameters
-        pass
+                data = ['CMD_MOVE', '1', '0', '-35', speed, '0']
+                self.c.run(data)
+        elif direction == RoboInterface.MovementDirection.LEFT:
+            for i in range(3):
+                data = ['CMD_MOVE', '1', '-35', '0', speed, '0']
+                self.c.run(data)
+        elif direction == RoboInterface.MovementDirection.RIGHT:
+            for i in range(3):
+                data = ['CMD_MOVE', '1', '35', '0', speed, '0']
+                self.c.run(data)
+        elif direction == RoboInterface.MovementDirection.TURN_LEFT:
+            for i in range(3):
+                data = ['CMD_MOVE', '1', '0', '0', speed, '-20']
+                self.c.run(data)
+        elif direction == RoboInterface.MovementDirection.TURN_RIGHT:
+            for i in range(3):
+                data = ['CMD_MOVE', '1', '0', '0', speed, '20']
+                self.c.run(data)        
+        return
 
     def getSnapshot():
         picam2 = None  # Initialize picam2 to None for robust cleanup
@@ -78,6 +94,8 @@ class HexapodControllerI(RoboInterface.HexapodController):
         
     def stop(self, current=None):
         print("Server: Received stop command")
+        data = ['CMD_MOVE', '1', '0', '0', '0', '0']
+        self.c.run(data)
         # self.hexapod.stop_movement()
         pass
 

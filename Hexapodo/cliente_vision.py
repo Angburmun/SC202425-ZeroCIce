@@ -115,7 +115,7 @@ class Client(Ice.Application):
             self.show_help()  # Show controls at the start
 
             # --- Keyboard Control Loop ---
-            current_speed = 20  # You can adjust this speed
+            current_speed = '10'  # You can adjust this speed
             moving = False
 
             while True:
