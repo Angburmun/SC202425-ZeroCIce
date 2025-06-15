@@ -46,7 +46,7 @@ class DummyServer(Ice.Application):
 
         print(f"HexapodController dummy active with proxy: {proxy}")
         adapter.activate()
-        print("Dummy server started on port 10000. Waiting for connections...")
+        print("Dummy server started on default port. Waiting for connections...")
         communicator.waitForShutdown()
         return 0
 
