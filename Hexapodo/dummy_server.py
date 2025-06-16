@@ -1,5 +1,6 @@
 import os, io, sys, Ice
 import RoboInterface  # Asegúrate de que Hexapod.ice esté compilado
+import cv2
 
 class HexapodControllerDummy(RoboInterface.HexapodController):
     def __init__(self):
@@ -9,17 +10,32 @@ class HexapodControllerDummy(RoboInterface.HexapodController):
         print(f"Dummy Server: Received move command - Direction: {direction}, Speed: {speed}")
         # No hace nada
 
+    # def getSnapshot(self, current=None):
+    #     try:
+    #         filename = "lenna.jpg"
+    #         print(f"Dummy Server: Reading {filename} from disk...")
+    #         with open(filename, "rb") as f:
+    #             image_data = f.read()
+    #         print(f"Dummy Server: Loaded {len(image_data)} bytes from {filename}")
+    #         return image_data
+    #     except Exception as e:
+    #         print(f"Error reading '{filename}': {e}")
+    #         return b''  # Devuelve vacío si hay error
+
     def getSnapshot(self, current=None):
         try:
-            print("Dummy Server: Reading 'lenna.jpg' from disk...")
-            filename = "lenna.jpg"
-            with open(filename, "rb") as f:
-                image_data = f.read()
-            print(f"Dummy Server: Loaded {len(image_data)} bytes from {filename}")
+            cap = cv2.VideoCapture(0)
+            _, frame = cap.read()
+            cap.release()
+            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90] 
+            _, encoded_image_array = cv2.imencode('.jpg', frame, encode_param)
+            image_data = encoded_image_array.tobytes()
+            print(f"Dummy Server: Captured image of size {len(image_data)} bytes")
             return image_data
         except Exception as e:
-            print(f"Error reading '{filename}': {e}")
-            return b''  # Devuelve vacío si hay error
+            print(f"Error capturing image from camera: {e}")
+            return b''
+
 
     def stop(self, current=None):
         print("Dummy Server: Received stop command")
