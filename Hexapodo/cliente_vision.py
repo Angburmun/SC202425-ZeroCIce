@@ -65,6 +65,10 @@ class Client(Ice.Application):
 
         else:
             print(f"No se detectaron objetos de tipo '{clase_deseada}'")
+            # Guardar imagen en disco
+            output_path = 'detecciones.jpg'
+            cv2.imwrite(output_path, img)
+            print(f"Imagen guardada en: {output_path}")
             return []
 
 
