@@ -1,4 +1,4 @@
-import os, io, sys, Ice
+import sys, Ice
 import RoboInterface  # Asegúrate de que Hexapod.ice esté compilado
 import cv2
 
@@ -69,4 +69,5 @@ class DummyServer(Ice.Application):
 
 if __name__ == '__main__':
     app = DummyServer()
-    sys.exit(app.main(sys.argv))
+    sys.exit(app.main(sys.argv, "config.server")) # if using a config file
+    # sys.exit(app.main(sys.argv))

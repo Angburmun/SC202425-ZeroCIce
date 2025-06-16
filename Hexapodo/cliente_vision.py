@@ -1,10 +1,10 @@
 import sys
 import Ice
-import io, cv2
+import cv2
 import numpy as np
 import time
 import RoboInterface  # Generated from Hexapod.ice
-import keyboard       # For reading keyboard input
+import keyboard
 import torch
 
 
@@ -13,9 +13,6 @@ class Client(Ice.Application):
 
     def yolo_vision(self, img):
 
-        # Cargar imagen
-        #image_path = '/home/lassy/MasterUGR/SC/Hexapodo/botellas2.jpg'  # Cambia esto por la ruta a tu imagen
-        #img = cv2.imread(image_path)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # Realizar predicción
@@ -30,7 +27,7 @@ class Client(Ice.Application):
 
         df = results.pandas().xyxy[0]  # Cada fila es una detección
 
-        # Filtrar por clase deseada (ejemplo: 'person')
+        # Filtrar por clase deseada
         clase_deseada = 'bottle'
         detecciones_filtradas = df[df['name'] == clase_deseada]
 
@@ -54,8 +51,6 @@ class Client(Ice.Application):
                 # Dibujar bounding box
                 cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
                 cv2.putText(img, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-
-            #img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
 
             # Guardar imagen en disco
             output_path = 'detecciones.jpg'
@@ -211,10 +206,6 @@ class Client(Ice.Application):
                 time.sleep(0.05)
 
 
-            # Request status before exiting (optional)
-            # status = hexapod_prx.getStatus()
-            # print(f"Final robot status: {status}")
-
         except KeyboardInterrupt:
             print("\nCtrl+C detected. Stopping robot and exiting.")
             if hexapod_prx and moving: # Check if proxy exists and was moving
@@ -254,8 +245,6 @@ class Client(Ice.Application):
                 try:
                     if hexapod_prx and moving and not keyboard.is_pressed('q'): # Ensure stop if loop exited unexpectedly
                         print("Ensuring robot is stopped in finally block.")
-                        # This might be problematic if the communicator is already shutting down
-                        # hexapod_prx.stop()
                     communicator.destroy()
                     print("Communicator destroyed.")
                 except Ice.Exception as e:
@@ -265,5 +254,5 @@ class Client(Ice.Application):
 if __name__ == '__main__':
     app = Client()
     # Ensure that Ice.Application.main() is called correctly
-    # sys.exit(app.main(sys.argv, "config.client")) # Example if using a config file
-    sys.exit(app.main(sys.argv))
+    sys.exit(app.main(sys.argv, "config.client")) # if using a config file
+    # sys.exit(app.main(sys.argv))

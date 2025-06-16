@@ -1,12 +1,9 @@
-import sys, os, Ice, io
+import sys, os, Ice
 import RoboInterface # Generated from Hexapod.ice
 from picamera2 import Picamera2
 from picamera2.previews.null_preview import NullPreview
 from control import Control
 
-# Import the Freenove Hexapod control library
-# (Assuming you have a library like 'freenove_hexapod_api')
-# import freenove_hexapod_api
 
 class HexapodControllerI(RoboInterface.HexapodController):
     def __init__(self):
@@ -128,4 +125,5 @@ class Server(Ice.Application):
 
 if __name__ == '__main__':
     app = Server()
-    sys.exit(app.main(sys.argv))
+    sys.exit(app.main(sys.argv, "config.server")) # if using a config file
+    # sys.exit(app.main(sys.argv))
