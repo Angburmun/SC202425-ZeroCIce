@@ -7,67 +7,67 @@ import RoboInterface  # Generated from Hexapod.ice
 import keyboard       # For reading keyboard input
 import torch
 
-def yolo_vision(img):
-    # Cargar el modelo YOLOv5 preentrenado
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', force_reload=False)  # 'yolov5s' es el modelo pequeño
-
-    # Cargar imagen
-    #image_path = '/home/lassy/MasterUGR/SC/Hexapodo/botellas2.jpg'  # Cambia esto por la ruta a tu imagen
-    #img = cv2.imread(image_path)
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    # Realizar predicción
-    results = model(img_rgb)
-
-    # Mostrar resultados
-    print("--------------")
-    results.print()  # Muestra por consola las detecciones
-    print("--------------")
-
-    #results.show()   # Abre una ventana con los resultados dibujados
-
-    df = results.pandas().xyxy[0]  # Cada fila es una detección
-
-    # Filtrar por clase deseada (ejemplo: 'person')
-    clase_deseada = 'bottle'
-    detecciones_filtradas = df[df['name'] == clase_deseada]
-
-    # Obtener la detección con mayor confianza
-    if not detecciones_filtradas.empty:
-        # Filtrar detecciones con confianza mayor al 50%
-        detecciones_filtradas = detecciones_filtradas[detecciones_filtradas['confidence'] > 0.5]
-
-        bounding_boxes = []
-        # Dibujar una caja para cada detección con confianza > 50%
-        for _, fila in detecciones_filtradas.iterrows():
-            xmin = int(fila['xmin'])
-            ymin = int(fila['ymin'])
-            xmax = int(fila['xmax'])
-            ymax = int(fila['ymax'])
-            conf = fila['confidence']
-            label = f"{fila['name']} {conf:.2f}"
-
-            bounding_boxes.append((xmin, ymin, xmax, ymax, label))
-
-            # Dibujar bounding box
-            cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-            cv2.putText(img, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-
-        #img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
-
-        # Guardar imagen en disco
-        output_path = 'detecciones.jpg'
-        cv2.imwrite(output_path, img)
-        print(f"Imagen guardada en: {output_path}")
-        return bounding_boxes
-
-    else:
-        print(f"No se detectaron objetos de tipo '{clase_deseada}'")
-        return []
-
 
 
 class Client(Ice.Application):
+
+    def yolo_vision(self, img):
+
+        # Cargar imagen
+        #image_path = '/home/lassy/MasterUGR/SC/Hexapodo/botellas2.jpg'  # Cambia esto por la ruta a tu imagen
+        #img = cv2.imread(image_path)
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # Realizar predicción
+        results = self.model(img_rgb)
+
+        # Mostrar resultados
+        print("--------------")
+        results.print()  # Muestra por consola las detecciones
+        print("--------------")
+
+        #results.show()   # Abre una ventana con los resultados dibujados
+
+        df = results.pandas().xyxy[0]  # Cada fila es una detección
+
+        # Filtrar por clase deseada (ejemplo: 'person')
+        clase_deseada = 'bottle'
+        detecciones_filtradas = df[df['name'] == clase_deseada]
+
+        # Obtener la detección con mayor confianza
+        if not detecciones_filtradas.empty:
+            # Filtrar detecciones con confianza mayor al 50%
+            detecciones_filtradas = detecciones_filtradas[detecciones_filtradas['confidence'] > 0.5]
+
+            bounding_boxes = []
+            # Dibujar una caja para cada detección con confianza > 50%
+            for _, fila in detecciones_filtradas.iterrows():
+                xmin = int(fila['xmin'])
+                ymin = int(fila['ymin'])
+                xmax = int(fila['xmax'])
+                ymax = int(fila['ymax'])
+                conf = fila['confidence']
+                label = f"{fila['name']} {conf:.2f}"
+
+                bounding_boxes.append((xmin, ymin, xmax, ymax, label))
+
+                # Dibujar bounding box
+                cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+                cv2.putText(img, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+            #img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
+
+            # Guardar imagen en disco
+            output_path = 'detecciones.jpg'
+            cv2.imwrite(output_path, img)
+            print(f"Imagen guardada en: {output_path}")
+            return bounding_boxes
+
+        else:
+            print(f"No se detectaron objetos de tipo '{clase_deseada}'")
+            return []
+
+
     def show_help(self):
         print("---------------------")
         print("\nControls:")
@@ -112,6 +112,10 @@ class Client(Ice.Application):
             
             print(f"Successfully connected to HexapodController")
 
+            # Cargar el modelo YOLOv5 preentrenado
+            self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', force_reload=False)  # 'yolov5s' es el modelo pequeño
+
+
             self.show_help()  # Show controls at the start
 
             # --- Keyboard Control Loop ---
@@ -155,7 +159,7 @@ class Client(Ice.Application):
                     #cv2.imshow("Imagen recibida", img)
                     #cv2.waitKey(0)  # Espera una tecla
                     #cv2.destroyAllWindows()
-                    bounding_boxes = yolo_vision(img)
+                    bounding_boxes = self.yolo_vision(img)
 
                     if bounding_boxes:
                         height, width, _ = img.shape
