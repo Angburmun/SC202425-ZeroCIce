@@ -174,10 +174,7 @@ class Client(Ice.Application):
                                 right_count += 1
 
                         print(f"Left: {left_count}, Center: {center_count}, Right: {right_count}")
-                        if (center_count + left_count + right_count) == 0:
-                            print("Robot should move forward.")
-                            hexapod_prx.move(RoboInterface.MovementDirection.FOWARD, current_speed)
-                        elif left_count == 0:
+                        if left_count == 0:
                             print("Robot should turn left.")
                             hexapod_prx.move(RoboInterface.MovementDirection.TURNLEFT, current_speed)
                         elif right_count == 0:                              
